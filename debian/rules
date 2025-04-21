@@ -1,4 +1,29 @@
 #!/usr/bin/make -f
 
+# Override BUILD_{DATE,USER,HOST} for reproducible build
+export BUILD_DATE = $(shell dpkg-parsechangelog -SVersion)
+export BUILD_USER = $(shell dpkg-parsechangelog -SSource)
+export BUILD_HOST = $(shell dpkg-vendor --query Vendor)
+
 %:
-	dh $@
+	dh $@ 
+
+override_dh_clean:
+	# Remove the pre-generated man pages (often "NOT-BUILT" dummies)
+	rm -f doc/flarq.1 doc/fldigi.1
+	dh_clean
+
+override_dh_auto_configure:
+	# force using external libmbedtls (with explicit flags until it has pkg-config support, #900015)
+	dh_auto_configure -- --with-libmbedtls LIBMBEDTLS_CFLAGS="-I/usr/include/mbedtls" LIBMBEDTLS_LIBS="-lmbedtls -lmbedx509 -lmbedcrypto"
+	# remove build path from build flags
+	sed -i -e 's/\(-f[^ ]*prefix-map\)=[^ =]*=/\1=.=/g' src/config.h
+
+override_dh_install:
+	find debian/fldigi -name *.xpm -delete
+	mkdir -p debian/fldigi/usr/share/icons/hicolor/64x64/apps
+	cp data/fldigi-psk.png debian/fldigi/usr/share/icons/hicolor/64x64/apps/fldigi.png
+	dh_install debian/flarq.png usr/share/icons/hicolor/48x48/apps
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=fldigi

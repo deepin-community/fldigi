@@ -1,0 +1,19 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,4 +1,4 @@
+-ACLOCAL_AMFLAGS = -I m4 -I m4/intl
++ACLOCAL_AMFLAGS = -I m4
+ # AC_CONFIG_MACRO_DIR([m4])
+ 
+ SUBDIRS = po doc src
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -420,7 +420,7 @@ target_vendor = @target_vendor@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-ACLOCAL_AMFLAGS = -I m4 -I m4/intl
++ACLOCAL_AMFLAGS = -I m4
+ # AC_CONFIG_MACRO_DIR([m4])
+ SUBDIRS = po doc src
+ EXTRA_DIST = build-aux/config.rpath
